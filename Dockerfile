@@ -18,6 +18,7 @@ RUN cat /etc/yum.repos.d/CentOS-Base.repo | sed s/^mirrorlist=/#mirrorlist=/g | 
     libstdc++-devel.i386 \
     libX11-devel \
     libXext-devel \
+    libXtst-devel \
     libXv-devel \
     make.x86_64 \
     mesa-libGL-devel \
