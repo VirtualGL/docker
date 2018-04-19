@@ -1,55 +1,47 @@
-FROM centos:5
+FROM centos:6
 
-RUN cat /etc/yum.repos.d/CentOS-Base.repo | sed s/^mirrorlist=/#mirrorlist=/g | sed 's@^#baseurl=http://mirror\.centos\.org/centos/\$releasever@baseurl=http://vault.centos.org/5.11@g' >/etc/yum.repos.d/CentOS-Base.repo.new \
- && mv -f /etc/yum.repos.d/CentOS-Base.repo.new /etc/yum.repos.d/CentOS-Base.repo \
- && cat /etc/yum.repos.d/libselinux.repo | sed s/^mirrorlist=/#mirrorlist=/g | sed 's@^#baseurl=http://mirror\.centos\.org/centos/\$releasever@baseurl=http://vault.centos.org/5.11@g' >/etc/yum.repos.d/libselinux.repo.new \
- && mv -f /etc/yum.repos.d/libselinux.repo.new /etc/yum.repos.d/libselinux.repo \
- && yum -y update \
+RUN yum -y update \
  && yum -y install epel-release.noarch \
  && yum -y install \
-    cmake28.x86_64 \
+    cmake.x86_64 \
     dpkg.x86_64 \
     expect.x86_64 \
     gcc-c++.x86_64 \
     gnupg.x86_64 \
-    glibc-devel \
+    glibc-devel.x86_64 \
+    glibc-devel.i686 \
     git.x86_64 \
-    libgcc.i386 \
-    libstdc++-devel.i386 \
-    libX11-devel \
-    libXext-devel \
-    libXtst-devel \
-    libXv-devel \
+    libgcc.i686 \
+    libstdc++-devel.x86_64 \
+    libstdc++-devel.i686 \
+    libX11-devel.x86_64 \
+    libX11-devel.i686 \
+    libXext-devel.x86_64 \
+    libXext-devel.i686 \
+    libXtst-devel.x86_64 \
+    libXtst-devel.i686 \
+    libXv-devel.x86_64 \
+    libXv-devel.i686 \
     make.x86_64 \
-    mesa-libGL-devel \
-    mesa-libGLU-devel \
+    mesa-libGL-devel.x86_64 \
+    mesa-libGL-devel.i686 \
+    mesa-libEGL-devel.x86_64 \
+    mesa-libEGL-devel.i686 \
+    mesa-libGLU-devel.x86_64 \
+    mesa-libGLU-devel.i686 \
     redhat-rpm-config \
     rpm-build.x86_64 \
     wget.x86_64 \
- && ln -fs /usr/bin/ccmake28 /usr/bin/ccmake \
- && ln -fs /usr/bin/cmake28 /usr/bin/cmake \
- && ln -fs /usr/bin/cpack28 /usr/bin/cpack \
- && ln -fs /usr/bin/ctest28 /usr/bin/ctest \
+    perl-ExtUtils-MakeMaker \
  && mkdir ~/src \
- && pushd ~/src \
- && wget http://www.openssl.org/source/openssl-1.0.2n.tar.gz \
- && tar xfz openssl-1.0.2n.tar.gz \
- && pushd openssl-1.0.2n \
- && ./config --prefix=/opt/openssl shared \
- && make install \
- && popd \
- && popd \
- && mv /opt/openssl/lib/libssl.so.1.0.0 /opt/openssl/lib/libssl.so.6 \
- && mv /opt/openssl/lib/libcrypto.so.1.0.0 /opt/openssl/lib/libcrypto.so.6 \
- && ln -fs libssl.so.6 /opt/openssl/lib/libssl.so \
- && ln -fs libcrypto.so.6 /opt/openssl/lib/libcrypto.so \
- && export LD_LIBRARY_PATH=/opt/openssl/lib:$LD_LIBRARY_PATH \
- && git clone --depth=1 https://gitlab.com/debsigs/debsigs.git -b debsigs-0.1.15%7Eroam1 ~/src/debsigs \
+ && git clone --depth=1 https://gitlab.com/debsigs/debsigs.git ~/src/debsigs \
  && pushd ~/src/debsigs \
+ && git checkout debsigs-0.1.15%7Eroam1 \
  && perl Makefile.PL \
  && make install \
  && popd \
  && rm -rf ~/src \
+ && yum -y remove perl-ExtUtils-MakeMaker gdbm-devel db4-cxx \
  && cd / \
  && yum clean all \
  && find /usr/lib/locale/ -mindepth 1 -maxdepth 1 -type d -not -path '*en_US*' -exec rm -rf {} \; \
@@ -61,10 +53,6 @@ RUN cat /etc/yum.repos.d/CentOS-Base.repo | sed s/^mirrorlist=/#mirrorlist=/g | 
  && find /usr/share/{man,doc,info} -type f -delete \
  && rm -rf /etc/ld.so.cache \ && rm -rf /var/cache/ldconfig/* \
  && rm -rf /tmp/*
-
-# Set environment
-ENV PATH /opt/openssl/bin:${PATH}
-ENV LD_LIBRARY_PATH /opt/openssl/lib:${LD_LIBRARY_PATH}
 
 # Set default command
 CMD ["/bin/bash"]
