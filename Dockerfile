@@ -15,6 +15,7 @@ RUN cat /etc/yum.repos.d/CentOS-Base.repo | sed s/^mirrorlist=/#mirrorlist=/g | 
     glibc-devel \
     git.x86_64 \
     libgcc.i386 \
+    libstdc++-devel.x86_64 \
     libstdc++-devel.i386 \
     libX11-devel \
     libXext-devel \
