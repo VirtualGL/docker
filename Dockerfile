@@ -22,6 +22,10 @@ RUN yum -y update \
     libXtst-devel.i686 \
     libXv-devel.x86_64 \
     libXv-devel.i686 \
+    libxcb-devel.x86_64 \
+    libxcb-devel.i686 \
+    xcb-util-keysyms-devel.x86_64 \
+    xcb-util-keysyms-devel.i686 \
     make.x86_64 \
     mesa-libGL-devel.x86_64 \
     mesa-libGL-devel.i686 \
