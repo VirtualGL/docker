@@ -3,7 +3,6 @@ FROM centos:6
 RUN yum -y update \
  && yum -y install epel-release.noarch \
  && yum -y install \
-    cmake.x86_64 \
     dpkg.x86_64 \
     expect.x86_64 \
     gcc-c++.x86_64 \
@@ -40,6 +39,13 @@ RUN yum -y update \
     wget.x86_64 \
     perl-ExtUtils-MakeMaker \
  && mkdir ~/src \
+ && pushd /opt \
+ && wget --no-check-certificate https://cmake.org/files/v3.1/cmake-3.1.3-Linux-i386.tar.gz \
+ && tar xf cmake-3.1.3-Linux-i386.tar.gz \
+ && rm cmake-3.1.3-Linux-i386.tar.gz \
+ && mv cmake-3.1.3-Linux-i386 cmake \
+ && for i in /opt/cmake/bin/*; do ln -fs $i /usr/bin/; done \
+ && popd \
  && git clone --depth=1 https://gitlab.com/debsigs/debsigs.git ~/src/debsigs \
  && pushd ~/src/debsigs \
  && git checkout debsigs-0.1.15%7Eroam1 \
