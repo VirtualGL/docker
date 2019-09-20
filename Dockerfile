@@ -33,6 +33,8 @@ RUN yum -y update \
     mesa-libEGL-devel.i686 \
     mesa-libGLU-devel.x86_64 \
     mesa-libGLU-devel.i686 \
+    ocl-icd-devel.x86_64 \
+    ocl-icd-devel.i686 \
     redhat-rpm-config \
     rpm-build.x86_64 \
     wget.x86_64 \
