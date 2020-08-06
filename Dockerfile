@@ -38,6 +38,7 @@ RUN yum -y update \
     rpm-build.x86_64 \
     wget.x86_64 \
     perl-ExtUtils-MakeMaker \
+    https://www.rpmfind.net/linux/remi/enterprise/6/remi/x86_64/gnupg1-1.4.23-1.el6.remi.x86_64.rpm \
  && mkdir ~/src \
  && pushd /opt \
  && wget --no-check-certificate https://cmake.org/files/v3.1/cmake-3.1.3-Linux-i386.tar.gz \
@@ -49,6 +50,8 @@ RUN yum -y update \
  && git clone --depth=1 https://gitlab.com/debsigs/debsigs.git ~/src/debsigs \
  && pushd ~/src/debsigs \
  && git checkout debsigs-0.1.15%7Eroam1 \
+ && echo -e '--- a/debsigs\n+++ b/debsigs\n@@ -101,7 +101,7 @@ sub cmd_sign($) {\n   #  my $gpgout = forktools::forkboth($arfd, $sigfile, "/usr/bin/gpg",\n   #"--detach-sign");\n \n-  my @cmdline = ("gpg", "--openpgp", "--detach-sign");\n+  my @cmdline = ("gpg1", "--openpgp", "--detach-sign");\n \n   if ($key) {\n     push (@cmdline, "--default-key", $key);' >patch \
+ && patch -p1 <patch \
  && perl Makefile.PL \
  && make install \
  && popd \
