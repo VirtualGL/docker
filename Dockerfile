@@ -41,10 +41,10 @@ RUN yum -y update \
     https://www.rpmfind.net/linux/remi/enterprise/6/remi/x86_64/gnupg1-1.4.23-1.el6.remi.x86_64.rpm \
  && mkdir ~/src \
  && pushd /opt \
- && wget --no-check-certificate https://cmake.org/files/v3.1/cmake-3.1.3-Linux-i386.tar.gz \
- && tar xf cmake-3.1.3-Linux-i386.tar.gz \
- && rm cmake-3.1.3-Linux-i386.tar.gz \
- && mv cmake-3.1.3-Linux-i386 cmake \
+ && wget --no-check-certificate https://cmake.org/files/v3.10/cmake-3.10.3-Linux-x86_64.tar.gz \
+ && tar xf cmake-3.10.3-Linux-x86_64.tar.gz \
+ && rm cmake-3.10.3-Linux-x86_64.tar.gz \
+ && mv cmake-3.10.3-Linux-x86_64 cmake \
  && for i in /opt/cmake/bin/*; do ln -fs $i /usr/bin/; done \
  && popd \
  && git clone --depth=1 https://gitlab.com/debsigs/debsigs.git ~/src/debsigs \
