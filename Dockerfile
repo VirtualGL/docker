@@ -1,49 +1,71 @@
-FROM centos:6
+FROM centos:7
 
-RUN rpm -Uvh https://vault.centos.org/6.10/updates/x86_64/Packages/openssl-1.0.1e-58.el6_10.x86_64.rpm \
- && cat /etc/yum.repos.d/CentOS-Base.repo | sed s/^mirrorlist=/#mirrorlist=/g | sed 's@^#baseurl=http://mirror\.centos\.org/centos/\$releasever@baseurl=https://vault.centos.org/6.10@g' >/etc/yum.repos.d/CentOS-Base.repo.new \
- && mv -f /etc/yum.repos.d/CentOS-Base.repo.new /etc/yum.repos.d/CentOS-Base.repo \
- && cat /etc/yum.repos.d/CentOS-fasttrack.repo | sed s/^mirrorlist=/#mirrorlist=/g | sed 's@^#baseurl=http://mirror\.centos\.org/centos/\$releasever@baseurl=https://vault.centos.org/6.10@g' >/etc/yum.repos.d/CentOS-fasttrack.repo.new \
- && mv -f /etc/yum.repos.d/CentOS-fasttrack.repo.new /etc/yum.repos.d/CentOS-fasttrack.repo \
- && yum -y update \
+RUN yum -y update \
  && yum -y install epel-release.noarch \
  && yum -y install \
-    dpkg.x86_64 \
-    expect.x86_64 \
-    gcc-c++.x86_64 \
-    gnupg.x86_64 \
-    glibc-devel.x86_64 \
+    audit-libs-devel \
+    automake \
+    binutils-devel \
+    bzip2-devel \
+    dbus-devel \
+    dpkg \
+    elfutils-devel \
+    elfutils-libelf-devel \
+    expect \
+    file-devel \
+    gcc-c++ \
+    gettext-devel \
+    git \
+    glibc-devel \
     glibc-devel.i686 \
-    git.x86_64 \
-    libgcc.i686 \
-    libstdc++-devel.x86_64 \
-    libstdc++-devel.i686 \
-    libX11-devel.x86_64 \
+    gnupg1 \
+    gnupg2 \
+    ima-evm-utils-devel \
+    libX11-devel \
     libX11-devel.i686 \
-    libXext-devel.x86_64 \
+    libXext-devel \
     libXext-devel.i686 \
-    libXtst-devel.x86_64 \
+    libXtst-devel \
     libXtst-devel.i686 \
-    libXv-devel.x86_64 \
+    libXv-devel \
     libXv-devel.i686 \
-    libxcb-devel.x86_64 \
+    libacl-devel \
+    libarchive-devel \
+    libcap-devel \
+    libselinux-devel \
+    libstdc++-devel \
+    libstdc++-devel.i686 \
+    libstdc++-static \
+    libstdc++-static.i686 \
+    libtool \
+    libxcb-devel \
     libxcb-devel.i686 \
-    xcb-util-keysyms-devel.x86_64 \
-    xcb-util-keysyms-devel.i686 \
-    make.x86_64 \
-    mesa-libGL-devel.x86_64 \
-    mesa-libGL-devel.i686 \
-    mesa-libEGL-devel.x86_64 \
+    libzstd-devel \
+    lua-devel \
+    make \
+    mesa-libEGL-devel \
     mesa-libEGL-devel.i686 \
-    mesa-libGLU-devel.x86_64 \
+    mesa-libGL-devel \
+    mesa-libGL-devel.i686 \
+    mesa-libGLU-devel \
     mesa-libGLU-devel.i686 \
-    ocl-icd-devel.x86_64 \
-    ocl-icd-devel.i686 \
-    redhat-rpm-config \
-    rpm-build.x86_64 \
-    wget.x86_64 \
+    ncurses-devel \
+    ocl-icd-devel \
+    https://negativo17.org/repos/nvidia/epel-7/x86_64/ocl-icd-2.2.12-1.el7.i686.rpm \
+    https://negativo17.org/repos/nvidia/epel-7/x86_64/ocl-icd-devel-2.2.12-1.el7.i686.rpm \
+    openssl-devel \
     perl-ExtUtils-MakeMaker \
-    https://www.rpmfind.net/linux/remi/enterprise/6/remi/x86_64/gnupg1-1.4.23-1.el6.remi.x86_64.rpm \
+    popt-devel \
+    python2-devel \
+    python3-devel \
+    readline-devel \
+    redhat-rpm-config \
+    rpm-build \
+    wget \
+    xcb-util-keysyms-devel \
+    xcb-util-keysyms-devel.i686 \
+    xz-devel \
+    zstd \
  && mkdir ~/src \
  && pushd /opt \
  && wget --no-check-certificate https://cmake.org/files/v3.15/cmake-3.15.7-Linux-x86_64.tar.gz \
@@ -114,20 +136,52 @@ RUN rpm -Uvh https://vault.centos.org/6.10/updates/x86_64/Packages/openssl-1.0.1
  && ln -fs /opt/arm64/usr/lib64/libm.so /opt/gcc.arm64/aarch64-none-linux-gnu/libc/usr/lib64/libm.so \
  && mkdir ~/rpm \
  && pushd ~/rpm \
- && rpm2cpio http://mirror.centos.org/altarch/7/updates/aarch64/Packages/rpm-4.11.3-48.el7_9.aarch64.rpm | cpio -idv \
- && mv usr/lib/rpm/platform/aarch64-linux /usr/lib/rpm/platform \
+ && wget https://dl.rockylinux.org/vault/rocky/8.4/BaseOS/source/tree/Packages/rpm-4.14.3-13.el8.src.rpm \
+ && rpmbuild --rebuild rpm-4.14.3-13.el8.src.rpm \
  && popd \
  && rm -rf ~/rpm \
+ && pushd ~/rpmbuild/RPMS/x86_64 \
+ && rpm -Uvh rpm-4* rpm-libs-* rpm-build-* python2-rpm-* rpm-sign-* \
+ && popd \
+ && rm -rf ~/rpmbuild \
  && git clone --depth=1 https://gitlab.com/debsigs/debsigs.git ~/src/debsigs \
  && pushd ~/src/debsigs \
- && git checkout debsigs-0.1.15%7Eroam1 \
+ && git fetch --tags \
+ && git checkout debsigs-0.1.18-debian \
  && echo -e '--- a/debsigs\n+++ b/debsigs\n@@ -101,7 +101,7 @@ sub cmd_sign($) {\n   #  my $gpgout = forktools::forkboth($arfd, $sigfile, "/usr/bin/gpg",\n   #"--detach-sign");\n \n-  my @cmdline = ("gpg", "--openpgp", "--detach-sign");\n+  my @cmdline = ("gpg1", "--openpgp", "--detach-sign");\n \n   if ($key) {\n     push (@cmdline, "--default-key", $key);' >patch \
  && patch -p1 <patch \
  && perl Makefile.PL \
  && make install \
  && popd \
  && rm -rf ~/src \
- && yum -y remove perl-ExtUtils-MakeMaker gdbm-devel db4-cxx \
+ && yum -y autoremove \
+    audit-libs-devel \
+    automake \
+    binutils-devel \
+    bzip2-devel \
+    db4-cxx \
+    dbus-devel \
+    elfutils-devel \
+    elfutils-libelf-devel \
+    file-devel \
+    gdbm-devel \
+    gettext-devel \
+    ima-evm-utils-devel \
+    libacl-devel \
+    libarchive-devel \
+    libcap-devel \
+    libselinux-devel \
+    libtool \
+    libzstd-devel \
+    lua-devel \
+    ncurses-devel \
+    openssl-devel \
+    perl-ExtUtils-MakeMaker \
+    popt-devel \
+    python2-devel \
+    python3-devel \
+    readline-devel \
+    xz-devel \
  && cd / \
  && yum clean all \
  && find /usr/lib/locale/ -mindepth 1 -maxdepth 1 -type d -not -path '*en_US*' -exec rm -rf {} \; \
